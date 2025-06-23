@@ -35,13 +35,13 @@ export default function Header() {
               </a>
             </li>
             <li className="nav-item mx-2">
-              <a className="nav-link active btn btn-info" href="#">
-                Whishlist
+              <a className="nav-link active" href="#">
+                <i className="fa-regular fa-heart fa-xl"></i>
               </a>
             </li>
             <li className="nav-item ms-2">
-              <a className="nav-link active btn btn-info" href="#">
-                Cart
+              <a className="nav-link active" href="#">
+                <i className="fa-solid fa-cart-shopping fa-xl"></i>
               </a>
             </li>
           </ul>
