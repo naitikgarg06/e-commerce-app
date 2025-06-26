@@ -4,21 +4,24 @@ import Header from "../components/Header";
 import { useState } from "react";
 import StarsForRating from "../components/StarsForRating";
 import SimilarProducts from "../components/SimilarProducts";
+import useCartContext from "../contexts/CartContext";
+import useWishlistContext from "../contexts/WishlistContext";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { red } from "@mui/material/colors";
 
 export default function ProductDetails() {
-  const [quantity, setQuantity] = useState(0);
+  const { cart, addToCartHandler, removeProductFromCart } = useCartContext();
+  const { wishlist, wishlistHandler } = useWishlistContext();
   const id = useParams().productId;
   const [productDetails] = products.filter((item) => item.id == id);
-  const similarProducts = products.filter((item) => {
-    let isIncluded;
-    productDetails.subCategory.forEach((value, i) => {
-      if (productDetails.id != item.id && item.subCategory.includes(value)) {
-        isIncluded = true;
-      }
-    });
-    return isIncluded;
-  });
-  console.log(similarProducts);
+  const [quantity, setQuantity] = useState(
+    cart.filter((item) => item.prod.id == id)[0]?.quantity || 0
+  );
+  console.log(quantity);
+  console.log(cart);
+  const [isInWishlist, setIsInWishlist] = useState(wishlist.includes(productDetails));
+  console.log(wishlist);
   return (
     <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
       <Header />
@@ -32,18 +35,41 @@ export default function ProductDetails() {
               <div className="d-flex flex-column">
                 <div className="d-flex flex-wrap flex-sm-nowrap  justify-content-center justify-content-sm-start">
                   <div className="d-flex flex-column me-3">
-                    <div className="pt-3">
+                    <div className="pt-3 pe-3" style={{position: 'relative'}}>
                       <img
                         src={productDetails.largeImageUrl}
                         alt="Product Image"
                         className="img-fluid"
                       />
+                      <span className="" style={{position: 'absolute', top: '1rem', right: '-1rem'}}
+                      onClick={() => {
+                        wishlistHandler(productDetails)
+                        setIsInWishlist(!isInWishlist)
+                      }}>
+                      {isInWishlist ? (
+                        <FavoriteIcon
+                          sx={{ color: red[500] }}
+                          className=""
+                        ></FavoriteIcon>
+                      ) : (
+                        <FavoriteBorderIcon className="" style={{}}></FavoriteBorderIcon>
+                      )}
+                    </span>
                     </div>
+                    
                     <div className="w-100 my-3">
                       <button className="w-100">Buy Now</button>
                     </div>
                     <div className="w-100">
-                      <button className="w-100">Add To Cart</button>
+                      <button
+                        className="w-100"
+                        onClick={() => {
+                          addToCartHandler(productDetails);
+                          setQuantity(quantity + 1);
+                        }}
+                      >
+                        Add To Cart
+                      </button>
                     </div>
                   </div>
 
@@ -67,14 +93,33 @@ export default function ProductDetails() {
                     </div>
                     <div className="d-flex flex-wrap">
                       Quantity:{" "}
-                      <button className="rounded-circle mx-2"> - </button>
+                      <button
+                        className="rounded-circle mx-2"
+                        onClick={() => {
+                          const newQuantity =
+                            removeProductFromCart(productDetails);
+                          setQuantity(newQuantity);
+                        }}
+                      >
+                        {" "}
+                        -{" "}
+                      </button>
                       <input
                         type=""
                         value={quantity}
                         className="rounded-pill text-center"
                         style={{ width: 50 }}
                       />
-                      <button className="rounded-circle mx-2"> + </button>
+                      <button
+                        className="rounded-circle mx-2"
+                        onClick={() => {
+                          addToCartHandler(productDetails);
+                          setQuantity(quantity + 1);
+                        }}
+                      >
+                        {" "}
+                        +{" "}
+                      </button>
                     </div>
                     <div className="mt-3 d-flex">
                       Size:
@@ -133,7 +178,9 @@ export default function ProductDetails() {
                 </div>
                 <hr />
                 <div>
-                 <SimilarProducts productDetails={productDetails}  similarProducts={similarProducts}/>
+                  <SimilarProducts
+                    productDetails={productDetails}
+                  />
                 </div>
               </div>
             </div>

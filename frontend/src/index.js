@@ -7,6 +7,10 @@ import App from "./App";
 import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
 import { ProductsProvider } from "./contexts/ProductsContext";
+import { CartProvider } from "./contexts/CartContext";
+import Cart from "./pages/Cart";
+import Wishlist from "./pages/Wishlist";
+import { WishlistProvider } from "./contexts/WishlistContext";
 
 const routes = createBrowserRouter([
   {
@@ -21,13 +25,25 @@ const routes = createBrowserRouter([
     path: `/:category/product/:productId`,
     element: <ProductDetails />,
   },
+  {
+    path: "/cart",
+    element: <Cart />,
+  },
+  {
+    path: "/wishlist",
+    element: <Wishlist />,
+  },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <ProductsProvider>
-      <RouterProvider router={routes} />
+      <CartProvider>
+        <WishlistProvider>
+          <RouterProvider router={routes} />
+        </WishlistProvider>
+      </CartProvider>
     </ProductsProvider>
   </React.StrictMode>
 );

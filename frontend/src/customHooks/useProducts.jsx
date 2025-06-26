@@ -5,12 +5,10 @@ export default function useProducts(category) {
   const { products } = useProductsContext();
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [sortingValue, setSortingValue] = useState("none");
-
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(
     parseFloat(
       products.reduce((acc, curr) => {
-        // console.log(acc)
         if (curr.category.toLowerCase() == category) {
           return curr.sellingPrice > acc ? curr.sellingPrice : acc;
         } else {
@@ -23,16 +21,13 @@ export default function useProducts(category) {
   const [selectedSubCategory, setSelectedSubCatgeory] = useState([]);
   const [selectedRating, setSelectedRating] = useState(null);
 
-  // console.log(maxPrice)
   useEffect(() => {
-    // console.log("in effect");
     const productsListByCategory = products.filter((prod) => {
       const isSameCategory =
         prod.category.toLowerCase() == category ? true : false;
       let isSubCategoryMatched = selectedSubCategory.length ? false : true;
       selectedSubCategory?.forEach((item) => {
         if (prod.subCategory.includes(item)) {
-          // console.log("yes");
           isSubCategoryMatched = true;
         }
       });
@@ -47,22 +42,9 @@ export default function useProducts(category) {
         isInPriceRange
       );
     });
-    // console.log(productsListByCategory);
-    // let maxValue = productsListByCategory.reduce(
-    //   (acc, curr) =>
-    //     parseInt(curr.originalPrice) > acc ? parseInt(curr.originalPrice) : acc,
-    //   0
-    // );
-    // setMaxPrice(maxValue);
-    // setCurrPriceValue((maxValue - minPrice) / 2);
-
     setFilteredProducts(productsListByCategory);
-
     // set sorting to prev type:
     sortProductsHandler(sortingValue, productsListByCategory);
-
-    // filterProdsByPriceRange(currPriceValue, productsListByCategory);
-    // filterProductsByRating(selectedRating, productsListByCategory);
   }, [selectedSubCategory, sortingValue, selectedRating, currPriceValue]);
 
   //   sort product by price:
@@ -85,26 +67,15 @@ export default function useProducts(category) {
       : setSelectedSubCatgeory((prev) => prev.filter((curr) => curr != value));
   }
 
-  // filter prods by rating:
+  // reset states to clear all filters:
 
-  function filterProductsByRating(rating, productsArray) {
-    console.log(rating);
-    if (rating) {
-      const newProducts = productsArray.filter(
-        (prod) => parseFloat(prod.rating) >= parseFloat(`${rating}`)
-      );
-      setFilteredProducts([...newProducts]);
-    }
+  function clearHandler() {
+    setCurrPriceValue(maxPrice);
+    setSelectedRating(null);
+    setSortingValue("none");
+    setSelectedSubCatgeory([]);
   }
 
-  // filter prods by price range:
-
-  function filterProdsByPriceRange(price) {
-    const newProducts = products.filter(
-      (prod) => prod.sellingPrice >= minPrice && prod.sellingPrice <= price
-    );
-    setFilteredProducts(newProducts);
-  }
 
   return {
     filteredProducts,
@@ -117,8 +88,10 @@ export default function useProducts(category) {
     handleSubCategory,
     selectedSubCategory,
     setSortingValue,
-    filterProductsByRating,
+    selectedRating,
     setSelectedRating,
-    filterProdsByPriceRange,
+    clearHandler,
+    selectedSubCategory,
+    sortingValue
   };
 }

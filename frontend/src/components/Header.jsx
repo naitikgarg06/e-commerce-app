@@ -1,10 +1,15 @@
+import { Link } from "react-router";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { red } from "@mui/material/colors";
+
 export default function Header() {
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid py-2">
-        <a className="navbar-brand" href="#">
+        <Link to={"/"} className="navbar-brand" href="#">
           Shopper's Stop
-        </a>
+        </Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -30,19 +35,25 @@ export default function Header() {
           </form>
           <ul className="navbar-nav mb-2 mb-lg-0">
             <li className="nav-item me-2">
-              <a className="nav-link active btn btn-info" aria-current="page" href="#">
+              <a
+                className="nav-link active btn btn-info"
+                aria-current="page"
+                href="#"
+              >
                 Login
               </a>
             </li>
+           
             <li className="nav-item mx-2">
-              <a className="nav-link active" href="#">
-                <i className="fa-regular fa-heart fa-xl"></i>
-              </a>
+              <Link to={"/wishlist"} className="nav-link active" href="#">
+                {/* <FavoriteIcon sx={{color: red[500]}} ></FavoriteIcon> */}
+                <FavoriteBorderIcon></FavoriteBorderIcon>
+              </Link>
             </li>
             <li className="nav-item ms-2">
-              <a className="nav-link active" href="#">
+              <Link to={"/cart"} className="nav-link active" href="#">
                 <i className="fa-solid fa-cart-shopping fa-xl"></i>
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

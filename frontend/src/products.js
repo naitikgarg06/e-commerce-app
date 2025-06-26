@@ -7,9 +7,12 @@ export const products = [
     originalPrice: "70000",
     sellingPrice: "50000",
     discount: "28",
-    thumbnailImageUrl: "/assets/samsung-s242.jpg",
+    thumbnailImageUrl:
+      "https://rukminim2.flixcart.com/image/128/128/xif0q/mobile/y/u/t/-original-imahcfwmayeffqz3.jpeg?q=70&crop=false",
+
     largeImageUrl:
       "https://rukminim2.flixcart.com/image/300/400/xif0q/mobile/y/u/t/-original-imahcfwmayeffqz3.jpeg?q=70&crop=false",
+    isAddedToCart: true,
     isAddedToWishList: false,
     fullTitle: "Samsung Galaxy S24 5G (Marble Gray, 128 GB)  (8 GB RAM)",
     rating: "3.8",
@@ -28,9 +31,10 @@ export const products = [
     originalPrice: "80000",
     sellingPrice: "56000",
     discount: "30",
-    thumbnailImageUrl: "/assets/iphone152.jpg",
+    thumbnailImageUrl: "/assets/iPhone-128.webp",
     largeImageUrl:
-    "https://rukminim2.flixcart.com/image/300/400/xif0q/mobile/k/l/l/-original-imagtc5fz9spysyk.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/300/400/xif0q/mobile/k/l/l/-original-imagtc5fz9spysyk.jpeg?q=70&crop=false",
+    isAddedToCart: true,
     isAddedToWishList: false,
     fullTitle: "Apple iPhone 15 (Blue, 128 GB)",
     rating: "2.0",
@@ -49,12 +53,12 @@ export const products = [
     sellingPrice: "70000",
     discount: "7",
     thumbnailImageUrl:
-    "https://rukminim2.flixcart.com/image/300/400/xif0q/computer/n/f/1/-original-imahcd9mbpxz8c3z.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/300/400/xif0q/computer/n/f/1/-original-imahcd9mbpxz8c3z.jpeg?q=70&crop=false",
     largeImageUrl:
-    "https://rukminim2.flixcart.com/image/300/400/xif0q/computer/n/f/1/-original-imahcd9mbpxz8c3z.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/300/400/xif0q/computer/n/f/1/-original-imahcd9mbpxz8c3z.jpeg?q=70&crop=false",
     isAddedToWishList: false,
     fullTitle:
-    "DELL 15 AMD Ryzen 5 Hexa Core 7530U - (16 GB/512 GB SSD/Windows 11 Home) 3535 Thin and Light Laptop  (15.6 Inch, Platinum Silver, 1.67 Kg, With MS Office)",
+      "DELL 15 AMD Ryzen 5 Hexa Core 7530U - (16 GB/512 GB SSD/Windows 11 Home) 3535 Thin and Light Laptop  (15.6 Inch, Platinum Silver, 1.67 Kg, With MS Office)",
     isAddedToCart: false,
     rating: "4.0",
     description: [
@@ -121,13 +125,20 @@ export const products = [
     originalPrice: "57990",
     sellingPrice: "39990",
     discount: "31",
-    thumbnailImageUrl: "https://rukminim2.flixcart.com/image/300/400/xif0q/washing-machine-new/k/5/t/-original-imaha7fqfpyghhyj.jpeg?q=70&crop=false",
-    largeImageUrl: "https://rukminim2.flixcart.com/image/300/400/xif0q/washing-machine-new/k/5/t/-original-imaha7fqfpyghhyj.jpeg?q=70&crop=false",
+    thumbnailImageUrl:
+      "https://rukminim2.flixcart.com/image/300/400/xif0q/washing-machine-new/k/5/t/-original-imaha7fqfpyghhyj.jpeg?q=70&crop=false",
+    largeImageUrl:
+      "https://rukminim2.flixcart.com/image/300/400/xif0q/washing-machine-new/k/5/t/-original-imaha7fqfpyghhyj.jpeg?q=70&crop=false",
     isAddedToWishList: false,
-    fullTitle: "Samsung 9 kg 5 Star, AI Ecobubble, Super Speed, Wi-Fi, Hygiene Steam, Digital Inverter Motor Fully Automatic Front Load Washing Machine with In-built Heater Grey  (WW90DG5U24AXTL)",
+    fullTitle:
+      "Samsung 9 kg 5 Star, AI Ecobubble, Super Speed, Wi-Fi, Hygiene Steam, Digital Inverter Motor Fully Automatic Front Load Washing Machine with In-built Heater Grey  (WW90DG5U24AXTL)",
     isAddedToCart: false,
     rating: "3.0",
-    description: ["Fully Automatic Front Load Washing Machines have Great Wash Quality with very less running cost", "1400 rpm : Higher the spin speed, lower the drying time", "Number of wash programs - 14"],
+    description: [
+      "Fully Automatic Front Load Washing Machines have Great Wash Quality with very less running cost",
+      "1400 rpm : Higher the spin speed, lower the drying time",
+      "Number of wash programs - 14",
+    ],
   },
   {
     id: 8,
@@ -137,15 +148,18 @@ export const products = [
     originalPrice: "31999",
     sellingPrice: "25999",
     discount: "28",
-    thumbnailImageUrl: "https://rukminim2.flixcart.com/image/128/128/xif0q/mobile/b/h/i/-original-imahcygb4g5x9m5n.jpeg?q=70&crop=false",
-    largeImageUrl: "https://rukminim2.flixcart.com/image/300/400/xif0q/mobile/b/h/i/-original-imahcygb4g5x9m5n.jpeg?q=70&crop=false",
+    thumbnailImageUrl:
+      "https://rukminim2.flixcart.com/image/128/128/xif0q/mobile/b/h/i/-original-imahcygb4g5x9m5n.jpeg?q=70&crop=false",
+    largeImageUrl:
+      "https://rukminim2.flixcart.com/image/300/400/xif0q/mobile/b/h/i/-original-imahcygb4g5x9m5n.jpeg?q=70&crop=false",
     isAddedToWishList: false,
     fullTitle: "MOTOROLA Edge 60 5G (PANTONE Shamrock, 256 GB)  (12 GB RAM)",
     rating: "4.5",
     description: [
       "12 GB RAM | 256 GB ROM | Expandable Upto 1 TB",
       "50MP + 50MP + 10MP | 50MP Front",
-      "Dimensity 7400 Processor"
+      "Dimensity 7400 Processor",
     ],
+    isAddedToCart: true,
   },
 ];

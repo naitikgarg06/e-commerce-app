@@ -1,4 +1,18 @@
-export default function SimilarProducts({ productDetails, similarProducts }) {
+import useCartContext from "../contexts/CartContext";
+import useProductsContext from "../contexts/ProductsContext";
+
+export default function SimilarProducts({ productDetails }) {
+    const {products} = useProductsContext()
+    const { cart, addToCartHandler, removeProductFromCart } = useCartContext()
+    const similarProducts = products.filter((item) => {
+      let isIncluded;
+      productDetails.subCategory.forEach((value, i) => {
+        if (productDetails.id != item.id && item.subCategory.includes(value)) {
+          isIncluded = true;
+        }
+      });
+      return isIncluded;
+    });
   return (
     <>
       <h5>
@@ -18,7 +32,9 @@ export default function SimilarProducts({ productDetails, similarProducts }) {
               <div>{item.name}</div>
               <div className="fw-bold">₹{item.sellingPrice}</div>
             </div>
-            <button className="btn btn-secondary rounded-0 w-100">
+            <button className="btn btn-secondary rounded-0 w-100"
+            onClick={() => addToCartHandler(item)}
+            >
               Move to Cart
             </button>
           </div>

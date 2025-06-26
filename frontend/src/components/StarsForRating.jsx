@@ -2,8 +2,8 @@ export default function StarsForRating({ rating }) {
   const integerRating = Math.floor(rating);
   const decimalRating = parseFloat((rating % 1).toFixed(2));
   const numberOfStars = [];
-  console.log(integerRating);
-  console.log(decimalRating);
+  // console.log(integerRating);
+  // console.log(decimalRating);
 
   let i = integerRating;
   while (i > 0) {

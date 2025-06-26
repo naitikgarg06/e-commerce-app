@@ -1,11 +1,17 @@
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import Header from "../components/Header";
 import { useState } from "react";
 import useProductsContext from "../contexts/ProductsContext";
 import useProducts from "../customHooks/useProducts";
 import { products } from "../products";
+import useCartContext from "../contexts/CartContext";
+import useWishlistContext from "../contexts/WishlistContext";
 
 export default function Products() {
+  const navigate = useNavigate();
+  const { cart, addToCartHandler } = useCartContext();
+  // console.log(cart);
+  const [clear, setClear] = useState(false);
   const category = useParams().category;
   const {
     filteredProducts,
@@ -13,12 +19,13 @@ export default function Products() {
     setCurrPriceValue,
     minPrice,
     maxPrice,
-    sortProductsHandler,
     handleSubCategory,
     setSortingValue,
+    selectedRating,
     setSelectedRating,
-    filterProductsByRating,
-    filterProdsByPriceRange,
+    clearHandler,
+    selectedSubCategory,
+    sortingValue,
   } = useProducts(category);
   const productsByCategory = products.filter(
     (prod) => prod.category.toLocaleLowerCase() == category
@@ -28,6 +35,9 @@ export default function Products() {
     []
   );
   subCategories = [...new Set(subCategories)];
+  const { wishlist, wishlistHandler } = useWishlistContext();
+
+  // console.log(cart)
 
   return (
     <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
@@ -41,7 +51,16 @@ export default function Products() {
             <div>
               <div className="d-flex justify-content-between">
                 <span className="fw-bold fs-5">Filters</span>
-                <span className="text-decoration-underline fs-5">Clear</span>
+                <span
+                  className="text-decoration-underline fs-5"
+                  onClick={() => {
+                    clearHandler();
+                    // setClear(true);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Clear
+                </span>
               </div>
               <div className="my-4">
                 <label htmlFor="priceRange" className="form-label fs-5 fw-bold">
@@ -56,9 +75,7 @@ export default function Products() {
                   id="priceRange"
                   value={currPriceValue}
                   onChange={(e) => {
-                    const price = e.target.value;
                     setCurrPriceValue(e.target.value);
-                    // filterProdsByPriceRange(price)
                   }}
                 ></input>
               </div>
@@ -71,6 +88,7 @@ export default function Products() {
                         type="checkbox"
                         name="category"
                         value={curr}
+                        checked={selectedSubCategory.includes(curr)}
                         onChange={(e) => {
                           handleSubCategory(e);
                         }}
@@ -88,6 +106,7 @@ export default function Products() {
                     type="radio"
                     name="rating"
                     value={4}
+                    checked={selectedRating === "4"}
                     id="4Stars"
                     onChange={(e) => {
                       setSelectedRating(e.target.value);
@@ -102,6 +121,7 @@ export default function Products() {
                     type="radio"
                     name="rating"
                     value={3}
+                    checked={selectedRating === "3"}
                     id="3Stars"
                     onChange={(e) => {
                       setSelectedRating(e.target.value);
@@ -115,6 +135,7 @@ export default function Products() {
                     type="radio"
                     name="rating"
                     value={2}
+                    checked={selectedRating === "2"}
                     id="2Stars"
                     onChange={(e) => {
                       setSelectedRating(e.target.value);
@@ -128,6 +149,7 @@ export default function Products() {
                     type="radio"
                     name="rating"
                     value={1}
+                    checked={selectedRating === "1"}
                     id="1Stars"
                     onChange={(e) => {
                       setSelectedRating(e.target.value);
@@ -144,6 +166,7 @@ export default function Products() {
                     name="sorByPrice"
                     value="low"
                     id="low"
+                    checked={sortingValue === "low"}
                     onChange={(e) => {
                       const sortingType = e.target.value;
                       setSortingValue(sortingType);
@@ -159,6 +182,7 @@ export default function Products() {
                     name="sorByPrice"
                     value="high"
                     id="high"
+                    checked={sortingValue === "high"}
                     onChange={(e) => {
                       const sortingType = e.target.value;
                       setSortingValue(sortingType);
@@ -186,12 +210,15 @@ export default function Products() {
                   >
                     <div className="card h-100">
                       <div className="row g-0 h-100">
-                        <div className="col-sm-4 d-flex justify-content-center align-items-center">
-                          <img
-                            src={prod.thumbnailImageUrl}
-                            alt="product"
-                            className="img-fluid rounded mh-100"
-                          />
+                        <div className="col-sm-4 d-flex justify-content-center align-items-sm-center">
+                          <div style={{}}>
+                            <img
+                              src={prod.thumbnailImageUrl}
+                              alt="product"
+                              // style={{objectFit: 'contain'}}
+                              className="img-fluid"
+                            />
+                          </div>
                         </div>
                         <div className="col-sm-8">
                           <div className="card-body h-100">
@@ -209,15 +236,61 @@ export default function Products() {
                                 <div className="">{prod.discount}%</div>
                               </div>
                               <div className="d-flex flex-column w-100">
-                                <button
-                                  to="/home appliances"
-                                  className="btn btn-primary rounded-0"
-                                >
-                                  Add To Cart
-                                </button>
-                                <button className="btn btn-secondary rounded-0 mt-2">
-                                  Save to Wishlist
-                                </button>
+                                {cart.filter((item) => item.prod === prod)
+                                  .length ? (
+                                  <button
+                                    className="btn btn-primary rounded-0"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      e.preventDefault()
+                                      navigate('/cart')
+                                    }}
+                                    
+                                  >
+                                    Go to Cart
+                                  </button>
+                                ) : (
+                                  <button
+                                    to="/home appliances"
+                                    className="btn rounded-0"
+                                    style={{
+                                      backgroundColor: "#898989",
+                                      color: "white",
+                                    }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      addToCartHandler(prod);
+                                    }}
+                                  >
+                                    Add To Cart
+                                  </button>
+                                )}
+
+                                {wishlist.includes(prod) ? (
+                                  <button
+                                    className="btn rounded-0 mt-2"
+                                    style={{
+                                      backgroundColor: "#898989",
+                                      color: "white",
+                                    }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      wishlistHandler(prod);
+                                    }}
+                                  >
+                                    Remove from Wishlist
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="btn btn-outline-secondary border border-black rounded-0 mt-2"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      wishlistHandler(prod);
+                                    }}
+                                  >
+                                    Save to Wishlist
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </div>
