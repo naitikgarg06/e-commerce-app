@@ -18,8 +18,8 @@ app.use(express.json());
 
 initialiseDatabase();
 
-const jsonData = fs.readFileSync("./products.json", "utf-8");
-const productsData = JSON.parse(jsonData);
+// const jsonData = fs.readFileSync("./products.json", "utf-8");
+// const productsData = JSON.parse(jsonData);
 
 // add data to database:
 async function seedData() {
@@ -45,7 +45,7 @@ async function seedCategory(data) {
   }
 }
 
-const categories = JSON.parse(fs.readFileSync("./category.json", "utf-8"));
+// const categories = JSON.parse(fs.readFileSync("./category.json", "utf-8"));
 // seedCategory(categories)
 
 // seedData();
