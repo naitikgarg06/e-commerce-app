@@ -14,8 +14,7 @@ export function CartProvider({ children }) {
   //     setCart(products.filter((prod) => prod.isAddedToCart))
   // }, [products])
 
-    console.log(cart)
-
+  // console.log(cart)
 
   function addToCartHandler(prod) {
     // check if prod is not added
@@ -49,8 +48,6 @@ export function CartProvider({ children }) {
     }
   }
 
-  // function
-  // console.log(cart)
   return (
     <CartContext.Provider
       value={{ cart, addToCartHandler, removeProductFromCart }}

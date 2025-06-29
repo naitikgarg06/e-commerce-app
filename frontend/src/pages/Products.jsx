@@ -1,18 +1,17 @@
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import Header from "../components/Header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useProductsContext from "../contexts/ProductsContext";
 import useProducts from "../customHooks/useProducts";
-import { products } from "../products";
 import useCartContext from "../contexts/CartContext";
 import useWishlistContext from "../contexts/WishlistContext";
 
 export default function Products() {
+  const location = useLocation();
+  const { products } = useProductsContext();
   const navigate = useNavigate();
   const { cart, addToCartHandler } = useCartContext();
-  // console.log(cart);
   const [clear, setClear] = useState(false);
-  const category = useParams().category;
   const {
     filteredProducts,
     currPriceValue,
@@ -26,18 +25,22 @@ export default function Products() {
     clearHandler,
     selectedSubCategory,
     sortingValue,
-  } = useProducts(category);
-  const productsByCategory = products.filter(
-    (prod) => prod.category.toLocaleLowerCase() == category
-  );
-  let subCategories = productsByCategory.reduce(
-    (acc, curr) => [...acc, ...curr.subCategory],
-    []
-  );
-  subCategories = [...new Set(subCategories)];
-  const { wishlist, wishlistHandler } = useWishlistContext();
+    category,
+  } = useProducts(location.state.id);
+  const [subCategories, setSubCategories] = useState([]);
+  useEffect(() => {
+    const productsByCategory = products.filter(
+      (prod) => prod.category.toLowerCase() == category.toLowerCase()
+    );
+    console.log(productsByCategory);
+    let allSubCategory = productsByCategory.reduce(
+      (acc, curr) => [...acc, ...curr.subCategory],
+      []
+    );
+    setSubCategories([...new Set(allSubCategory)]);
+  }, [products, category]);
 
-  // console.log(cart)
+  const { wishlist, wishlistHandler } = useWishlistContext();
 
   return (
     <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
@@ -205,7 +208,7 @@ export default function Products() {
               {filteredProducts?.map((prod, i) => (
                 <div className="col-md-6" key={i}>
                   <Link
-                    to={`./product/${prod.id}`}
+                    to={`./product/${prod._id}`}
                     className="text-decoration-none"
                   >
                     <div className="card h-100">
@@ -242,10 +245,9 @@ export default function Products() {
                                     className="btn btn-primary rounded-0"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      e.preventDefault()
-                                      navigate('/cart')
+                                      e.preventDefault();
+                                      navigate("/cart");
                                     }}
-                                    
                                   >
                                     Go to Cart
                                   </button>

@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import { products } from "../products";
 import Header from "../components/Header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StarsForRating from "../components/StarsForRating";
 import SimilarProducts from "../components/SimilarProducts";
 import useCartContext from "../contexts/CartContext";
@@ -9,19 +9,26 @@ import useWishlistContext from "../contexts/WishlistContext";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { red } from "@mui/material/colors";
+import useFetch from "../customHooks/useFetch";
 
 export default function ProductDetails() {
+  const id = useParams().productId;
+  const { data } = useFetch(`https://e-commerce-app-ten-pi.vercel.app/products/${id}`)
+  const [productDetails, setProductDetails] = useState(data || {})
   const { cart, addToCartHandler, removeProductFromCart } = useCartContext();
   const { wishlist, wishlistHandler } = useWishlistContext();
-  const id = useParams().productId;
-  const [productDetails] = products.filter((item) => item.id == id);
   const [quantity, setQuantity] = useState(
     cart.filter((item) => item.prod.id == id)[0]?.quantity || 0
   );
-  console.log(quantity);
-  console.log(cart);
   const [isInWishlist, setIsInWishlist] = useState(wishlist.includes(productDetails));
-  console.log(wishlist);
+
+  useEffect(() => {
+    if(data){
+      setProductDetails(data)
+    }
+  }, [data])
+
+  if(productDetails)
   return (
     <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
       <Header />

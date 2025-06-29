@@ -1,22 +1,29 @@
+import { useEffect, useState } from "react";
 import useCartContext from "../contexts/CartContext";
 import useProductsContext from "../contexts/ProductsContext";
 
 export default function SimilarProducts({ productDetails }) {
-    const {products} = useProductsContext()
-    const { cart, addToCartHandler, removeProductFromCart } = useCartContext()
-    const similarProducts = products.filter((item) => {
+  const { products } = useProductsContext();
+  console.log(productDetails);
+  const { cart, addToCartHandler, removeProductFromCart } = useCartContext();
+  const [similarProducts, setSimilarProducts] = useState([]);
+
+  useEffect(() => {
+    const filterSimilarProds = products.filter((item) => {
       let isIncluded;
-      productDetails.subCategory.forEach((value, i) => {
-        if (productDetails.id != item.id && item.subCategory.includes(value)) {
+      productDetails.subCategory?.forEach((value, i) => {
+        if (productDetails._id != item._id && item.subCategory.includes(value)) {
           isIncluded = true;
         }
       });
       return isIncluded;
     });
+    setSimilarProducts(filterSimilarProds)
+  }, [productDetails]);
   return (
     <>
       <h5>
-        More items you may like in {productDetails.subCategory.join(", ")}
+        More items you may like in {productDetails.subCategory?.join(", ")}
       </h5>
       <div className="d-flex h">
         {similarProducts.map((item) => (
@@ -32,8 +39,9 @@ export default function SimilarProducts({ productDetails }) {
               <div>{item.name}</div>
               <div className="fw-bold">₹{item.sellingPrice}</div>
             </div>
-            <button className="btn btn-secondary rounded-0 w-100"
-            onClick={() => addToCartHandler(item)}
+            <button
+              className="btn btn-secondary rounded-0 w-100"
+              onClick={() => addToCartHandler(item)}
             >
               Move to Cart
             </button>
