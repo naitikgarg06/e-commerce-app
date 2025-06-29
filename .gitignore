@@ -1,3 +1,6 @@
 # Backend
 backend/node_modules/
 backend/.env
+
+# Frontend
+frontend/src/products.js
