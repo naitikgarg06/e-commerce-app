@@ -5,8 +5,8 @@ const Products = require("./models/product.models.js");
 const Cart = require("./models/cart.models.js");
 const fs = require("node:fs");
 const cors = require("cors");
-const { default: mongoose } = require("mongoose");
-const { type } = require("node:os");
+const mongoose = require("mongoose");
+const Wishlist = require("./models/wishlist.models.js");
 
 const app = express();
 
@@ -28,6 +28,9 @@ initialiseDatabase();
 // const cartData = JSON.parse(cart);
 // const categories = JSON.parse(fs.readFileSync("./data/category.json", "utf-8"));
 
+// const wishlist = JSON.parse(fs.readFileSync('./data/wishlist.json', "utf-8"))
+
+// seedWishlist(wishlist)
 // seedData();
 // seedCategory(categories)
 // seedCartData(cartData);
@@ -118,8 +121,6 @@ app.post(`/cart`, async (req, res) => {
   }
 });
 
-// TODO: integrate api to frontend
-
 app.post("/cart/:id", async (req, res) => {
   try {
     const updatedProduct = await updateQuantityInCart(
@@ -128,7 +129,6 @@ app.post("/cart/:id", async (req, res) => {
     );
     res.json(updatedProduct);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "Failed to update item in cart" });
   }
 });
@@ -145,6 +145,33 @@ app.delete("/cart/:id", async (req, res) => {
     res.status(500).json({ error });
   }
 });
+
+app.get("/wishlist", async (req, res) => {
+  try {
+    const items = await getWishlistItems();
+    res.status(200).json(items)
+  } catch (error) {
+    res.status(500).json({error})
+  }
+})
+
+app.post("/wishlist", async (req, res) => {
+  try {
+    const newItem = await addItemToWishlist(req.body)
+    res.status(200).json(newItem)
+  } catch (error) {
+    res.status(500).json({error})
+  }
+})
+
+app.delete("/wishlist/:id", async (req, res) => {
+  try {
+    const removedItem = await removeItemFromWishlist(req.params.id)
+    res.status(200).json(removedItem)
+  } catch (error) {
+    res.status(500).json({error})
+  }
+})
 
 const PORT = 3000;
 app.listen(PORT, () => {
@@ -187,6 +214,19 @@ async function seedCategory(data) {
   }
 }
 
+// add data to wishlist
+async function seedWishlist(data){
+  try {
+    for(const item of data){
+      const newItem = new Wishlist(item)
+      const savedItem = await newItem.save()
+      console.log(savedItem)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // query for dabatase
 
 async function findAllProducts() {
@@ -196,7 +236,6 @@ async function findAllProducts() {
 
 async function findProductById(id) {
   const product = await Products.findOne({ _id: id });
-  // console.log(product)
   return product;
 }
 
@@ -213,10 +252,9 @@ async function findCategoryById(id) {
 async function getCartItems() {
   try {
     const products = await Cart.find().populate("productId");
-    // console.log(products);
     return products;
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 }
 
@@ -226,14 +264,12 @@ async function addItemToCart(data) {
     const savedProduct = await newProduct.save();
     return savedProduct.populate("productId");
   } catch (error) {
-    console.log(error);
     throw error;
   }
 }
 
 async function updateQuantityInCart(itemId, newQuantity) {
   try {
-    console.log(typeof itemId);
     const updatedProduct = await Cart.findByIdAndUpdate(
       itemId,
       { quantity: newQuantity },
@@ -251,5 +287,33 @@ async function deleteItemFromCart(id) {
     return deletedProduct;
   } catch (error) {
     throw error;
+  }
+}
+
+async function getWishlistItems(){
+  try {
+    const items = await Wishlist.find().populate('itemId')
+    return items
+  } catch (error) {
+    throw error
+  }
+}
+
+async function addItemToWishlist(data){
+  try {
+    const newItem = new Wishlist(data)
+    const savedItem = await newItem.save()
+    return savedItem.populate('itemId')
+  } catch (error) {
+    throw error
+  }
+}
+
+async function removeItemFromWishlist(id){
+  try {
+    const item = await Wishlist.findOneAndDelete({ _id: id})
+    return item
+  } catch (error) {
+    throw error
   }
 }
