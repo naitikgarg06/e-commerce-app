@@ -1,6 +1,9 @@
 # Backend
 backend/node_modules/
 backend/.env
+backend/models/wishlist.models.js
 
 # Frontend
 frontend/src/products.js
+
+todo.md

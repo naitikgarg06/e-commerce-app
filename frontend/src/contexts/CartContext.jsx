@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import useProductsContext from "./ProductsContext";
+import useFetch from "../customHooks/useFetch";
 
 const CartContext = createContext();
 
@@ -7,52 +7,111 @@ const useCartContext = () => useContext(CartContext);
 export default useCartContext;
 
 export function CartProvider({ children }) {
-  const { products, setProducts } = useProductsContext();
-  const [cart, setCart] = useState([]);
+  const { data, loading, error } = useFetch("http://localhost:3000/cart");
+  const [cart, setCart] = useState(null);
 
-  // useEffect(() => {
-  //     setCart(products.filter((prod) => prod.isAddedToCart))
-  // }, [products])
-
-  // console.log(cart)
-
-  function addToCartHandler(prod) {
-    // check if prod is not added
-    if (!cart.filter((item) => item.prod == prod).length) {
-      setCart((prevState) => [...cart, { prod, quantity: 1 }]);
-    } else {
-      // const currQuantity = cart.filter((item) => item.prod == prod)[0].quantity
-      const updatedProductQuantity = cart.map((item) =>
-        item.prod == prod ? { ...item, quantity: item.quantity + 1 } : item
-      );
-      setCart(updatedProductQuantity);
+  useEffect(() => {
+    if ((data && data.error) || error) {
+      setCart([]);
     }
-  }
+    if (data && data.length) {
+      setCart(data);
+    }
+  }, [data, error]);
 
-  function removeProductFromCart(prod) {
-    if (cart.filter((item) => item.prod == prod).length) {
-      const currQuantity = cart.filter((item) => item.prod == prod)[0].quantity;
-      if (currQuantity > 1) {
-        const updatedProductQuantity = cart.map((item) =>
-          item.prod == prod ? { ...item, quantity: item.quantity - 1 } : item
-        );
-        setCart(updatedProductQuantity);
-        return currQuantity - 1;
+  async function addToCartHandler(prod) {
+    // check if prod is not added
+    if (!cart.filter((item) => item.productId._id === prod._id).length) {
+      const response = await fetch("http://localhost:3000/cart", {
+        method: "POST",
+        body: JSON.stringify({ productId: prod._id, quantity: 1 }),
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const newProduct = await response.json();
+        setCart((prevState) => [...cart, newProduct]);
+        return true;
       } else {
-        const updatedProductQuantity = cart.filter((item) => item.prod != prod);
-        setCart(updatedProductQuantity);
-        return 0;
+        console.log("Failed to add to cart");
+        return false;
       }
     } else {
-      return 0;
+      return false;
     }
   }
 
-  return (
-    <CartContext.Provider
-      value={{ cart, addToCartHandler, removeProductFromCart }}
-    >
-      {children}
-    </CartContext.Provider>
-  );
+  async function incrementQuantity(cartId, quantity) {
+    const response = await fetch(`http://localhost:3000/cart/${cartId}`, {
+      method: "POST",
+      body: JSON.stringify({ quantity: quantity + 1 }),
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+    if (response.ok) {
+      const updatedCart = cart.map((item) =>
+        item._id == cartId ? { ...item, quantity: quantity + 1 } : item
+      );
+      setCart(updatedCart);
+      return quantity + 1;
+    } else {
+      return quantity;
+    }
+  }
+
+  async function decrementQuantity(cartId, quantity) {
+    if (quantity === 1) {
+      // remove item:
+      await removeProductFromCart(cartId);
+      return 0;
+    } else {
+      const response = await fetch(`http://localhost:3000/cart/${cartId}`, {
+        method: "POST",
+        body: JSON.stringify({ quantity: quantity - 1 }),
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const updatedCart = cart.map((item) =>
+          item._id == cartId ? { ...item, quantity: quantity - 1 } : item
+        );
+        setCart(updatedCart);
+        return quantity - 1;
+      } else {
+        return quantity;
+      }
+    }
+  }
+
+  async function removeProductFromCart(cartId) {
+    if (cart.filter((item) => item._id == cartId).length) {
+      const response = await fetch(`http://localhost:3000/cart/${cartId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        const updatedProductQuantity = cart.filter(
+          (item) => item._id != cartId
+        );
+        setCart(updatedProductQuantity);
+      }
+    }
+  }
+
+  if (cart)
+    return (
+      <CartContext.Provider
+        value={{
+          cart,
+          incrementQuantity,
+          removeProductFromCart,
+          decrementQuantity,
+          addToCartHandler,
+        }}
+      >
+        {children}
+      </CartContext.Provider>
+    );
 }

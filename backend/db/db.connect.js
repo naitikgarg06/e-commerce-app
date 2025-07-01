@@ -14,4 +14,6 @@ async function initialiseDatabase() {
     });
 }
 
+// initialiseDatabase()
+
 module.exports = { initialiseDatabase }

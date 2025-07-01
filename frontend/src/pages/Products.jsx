@@ -28,6 +28,7 @@ export default function Products() {
     category,
   } = useProducts(location.state.id);
   const [subCategories, setSubCategories] = useState([]);
+
   useEffect(() => {
     const productsByCategory = products.filter(
       (prod) => prod.category.toLowerCase() == category.toLowerCase()
@@ -113,7 +114,6 @@ export default function Products() {
                     id="4Stars"
                     onChange={(e) => {
                       setSelectedRating(e.target.value);
-                      // filterProductsByRating(e.target.value, filteredProducts);
                     }}
                   />{" "}
                   4 stars and above
@@ -173,7 +173,6 @@ export default function Products() {
                     onChange={(e) => {
                       const sortingType = e.target.value;
                       setSortingValue(sortingType);
-                      // sortProductsHandler(sortingType, filteredProducts);
                     }}
                   />{" "}
                   Price - Low to High
@@ -189,7 +188,6 @@ export default function Products() {
                     onChange={(e) => {
                       const sortingType = e.target.value;
                       setSortingValue(sortingType);
-                      // sortProductsHandler(sortingType, filteredProducts);
                     }}
                   />{" "}
                   Price - High to Low
@@ -239,8 +237,9 @@ export default function Products() {
                                 <div className="">{prod.discount}%</div>
                               </div>
                               <div className="d-flex flex-column w-100">
-                                {cart.filter((item) => item.prod === prod)
-                                  .length ? (
+                                {cart.filter(
+                                  (item) => item.productId._id == prod._id
+                                ).length ? (
                                   <button
                                     className="btn btn-primary rounded-0"
                                     onClick={(e) => {

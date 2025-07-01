@@ -7,18 +7,6 @@ import useProducts from "./customHooks/useProducts";
 import useProductsContext from "./contexts/ProductsContext";
 
 function App() {
-  // const { products, setProducts } = useProductsContext();
-  // const { data, error, loading } = useFetch(
-  //   "https://e-commerce-app-ten-pi.vercel.app/products"
-  // );
-
-  // useEffect(() => {
-  //   if(data && data.length){
-  //     setProducts(data)
-  //   }
-  // }, [data])
-  
-
   return (
     <div className="App h-100">
       <Header />

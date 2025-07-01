@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {Link} from 'react-router'
 import useCartContext from "../contexts/CartContext";
 import useProductsContext from "../contexts/ProductsContext";
 
@@ -12,13 +13,16 @@ export default function SimilarProducts({ productDetails }) {
     const filterSimilarProds = products.filter((item) => {
       let isIncluded;
       productDetails.subCategory?.forEach((value, i) => {
-        if (productDetails._id != item._id && item.subCategory.includes(value)) {
+        if (
+          productDetails._id != item._id &&
+          item.subCategory.includes(value)
+        ) {
           isIncluded = true;
         }
       });
       return isIncluded;
     });
-    setSimilarProducts(filterSimilarProds)
+    setSimilarProducts(filterSimilarProds);
   }, [productDetails]);
   return (
     <>
@@ -39,12 +43,18 @@ export default function SimilarProducts({ productDetails }) {
               <div>{item.name}</div>
               <div className="fw-bold">₹{item.sellingPrice}</div>
             </div>
-            <button
-              className="btn btn-secondary rounded-0 w-100"
-              onClick={() => addToCartHandler(item)}
-            >
-              Move to Cart
-            </button>
+            {cart.filter((curr) => curr.productId._id === item._id).length ? (
+              <Link to='/cart' className="btn btn-info">Go to Cart</Link>
+            ) : (
+              <button
+                className="btn btn-secondary rounded-0 w-100"
+                onClick={() => {
+                  addToCartHandler(item);
+                }}
+              >
+                Add to Cart
+              </button>
+            )}
           </div>
         ))}
       </div>

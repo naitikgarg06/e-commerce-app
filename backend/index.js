@@ -2,8 +2,11 @@ const { initialiseDatabase } = require("./db/db.connect.js");
 const express = require("express");
 const Category = require("./models/category.models.js");
 const Products = require("./models/product.models.js");
+const Cart = require("./models/cart.models.js");
 const fs = require("node:fs");
 const cors = require("cors");
+const { default: mongoose } = require("mongoose");
+const { type } = require("node:os");
 
 const app = express();
 
@@ -18,58 +21,18 @@ app.use(express.json());
 
 initialiseDatabase();
 
-// const jsonData = fs.readFileSync("./products.json", "utf-8");
+// const jsonData = fs.readFileSync("./data/products.json", "utf-8");
 // const productsData = JSON.parse(jsonData);
 
-// add data to database:
-async function seedData() {
-  try {
-    for (const productData of productsData) {
-      const newProduct = new Products(productData);
-      newProduct.save();
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-// add category to database:
-async function seedCategory(data) {
-  try {
-    for (const category of data) {
-      const newCategory = new Category(category);
-      newCategory.save();
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-// const categories = JSON.parse(fs.readFileSync("./category.json", "utf-8"));
-// seedCategory(categories)
+// const cart = fs.readFileSync("./data/cart.json", "utf-8");/
+// const cartData = JSON.parse(cart);
+// const categories = JSON.parse(fs.readFileSync("./data/category.json", "utf-8"));
 
 // seedData();
+// seedCategory(categories)
+// seedCartData(cartData);
 
-async function findAllProducts() {
-  const products = await Products.find();
-  return products;
-}
 
-async function findProductById(id) {
-  const product = await Products.findOne({ _id: id });
-  // console.log(product)
-  return product;
-}
-
-async function findAllCategory() {
-  const categories = await Category.find();
-  return categories;
-}
-
-async function findCategoryById(id){
-  const category = await Category.findOne({_id: id})
-  return category
-}
 
 
 // get products api
@@ -117,18 +80,176 @@ app.get("/category", async (req, res) => {
 // get category by id:
 app.get("/category/:id", async (req, res) => {
   try {
-    const category = await findCategoryById(req.params.id)
-    if(category){
-      res.status(200).json(category)
+    const category = await findCategoryById(req.params.id);
+    if (category) {
+      res.status(200).json(category);
     } else {
-      res.status(404).json({ error: "Category not found"})
+      res.status(404).json({ error: "Category not found" });
     }
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch data"})
+    res.status(500).json({ error: "Failed to fetch data" });
   }
-})
+});
+
+// get cart items:
+app.get("/cart", async (req, res) => {
+  try {
+    const cartItems = await getCartItems();
+    if (cartItems && cartItems.length) {
+      res.status(200).json(cartItems);
+    } else {
+      res.status(404).json({ error: "No items found in cart" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch data" });
+  }
+});
+
+// post api add item in cart
+app.post(`/cart`, async (req, res) => {
+  try {
+    const item = req.body;
+    const addedItem = await addItemToCart(item);
+    if (addedItem) {
+      res.status(200).json(addedItem);
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add item to cart" });
+  }
+});
+
+// TODO: integrate api to frontend
+
+app.post("/cart/:id", async (req, res) => {
+  try {
+    const updatedProduct = await updateQuantityInCart(
+      req.params.id,
+      req.body.quantity
+    );
+    res.json(updatedProduct);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Failed to update item in cart" });
+  }
+});
+
+app.delete("/cart/:id", async (req, res) => {
+  try {
+    const deletedProduct = await deleteItemFromCart(req.params.id);
+    if (deletedProduct) {
+      res.status(200).json(deletedProduct);
+    } else {
+      res.status(404).json({ error: "Item no found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
 
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
+
+// add data to cart
+async function seedCartData(data) {
+  try {
+    for (const item of data) {
+      const newCartItem = new Cart(item);
+      newCartItem.save();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// add data to products:
+async function seedData(data) {
+  try {
+    for (const productData of data) {
+      const newProduct = new Products(productData);
+      newProduct.save();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// add category to database:
+async function seedCategory(data) {
+  try {
+    for (const category of data) {
+      const newCategory = new Category(category);
+      newCategory.save();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// query for dabatase
+
+async function findAllProducts() {
+  const products = await Products.find();
+  return products;
+}
+
+async function findProductById(id) {
+  const product = await Products.findOne({ _id: id });
+  // console.log(product)
+  return product;
+}
+
+async function findAllCategory() {
+  const categories = await Category.find();
+  return categories;
+}
+
+async function findCategoryById(id) {
+  const category = await Category.findOne({ _id: id });
+  return category;
+}
+
+async function getCartItems() {
+  try {
+    const products = await Cart.find().populate("productId");
+    // console.log(products);
+    return products;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function addItemToCart(data) {
+  try {
+    const newProduct = new Cart(data);
+    const savedProduct = await newProduct.save();
+    return savedProduct.populate("productId");
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+async function updateQuantityInCart(itemId, newQuantity) {
+  try {
+    console.log(typeof itemId);
+    const updatedProduct = await Cart.findByIdAndUpdate(
+      itemId,
+      { quantity: newQuantity },
+      { new: true }
+    );
+    return updatedProduct.populate("productId");
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function deleteItemFromCart(id) {
+  try {
+    const deletedProduct = await Cart.findOneAndDelete({ _id: id });
+    return deletedProduct;
+  } catch (error) {
+    throw error;
+  }
+}

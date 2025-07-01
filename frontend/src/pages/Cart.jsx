@@ -2,8 +2,8 @@ import Header from "../components/Header";
 import useCartContext from "../contexts/CartContext";
 
 export default function Cart() {
-  const { cart, removeProductFromCart, addToCartHandler } = useCartContext();
-  // const [quantity, setQuantity]
+  const { cart, incrementQuantity, decrementQuantity } = useCartContext();
+
   console.log(cart);
   return (
     <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
@@ -13,38 +13,39 @@ export default function Cart() {
           <h4 className="text-center">MY CART (1)</h4>
           <div className="row g-3 flex-column-reverse flex-md-row">
             <div className="col-12 col-md-8 bg-light pb-3">
-              {cart?.map(({ prod, quantity }, index) => (
-                // <div className="container">
-                <div className="row d-flex w-100 flex-column flex-sm-row align-items-center">
-                  {/* <div class=""> */}
-                  {/* <div className="contaier"> */}
+              {cart?.map(
+                ({ _id: cartId, productId: product, quantity }, index) => (
+                  <div
+                    className="row d-flex w-100 flex-column flex-sm-row align-items-center"
+                    key={index}
+                  >
                     <div class="col-sm-4" style={{}}>
                       <img
-                        src={prod.thumbnailImageUrl}
+                        src={product.thumbnailImageUrl}
                         class="img-fluid mx-auto d-block"
                         alt="Product Images"
                       />
                     </div>
                     <div class="col-sm-8 flex-grow-1 ps-sm-4 d-flex flex-column align-items-center align-items-sm-start">
                       <span className="text-center">
-                        <h4>{prod.name}</h4>
+                        <h4>{product.name}</h4>
                       </span>
                       <div className="d-flex align-items-end flex-wrap">
                         <span className="fw-bold fs-5 pe-2">
-                          ₹{prod.sellingPrice}
+                          ₹{product.sellingPrice}
                         </span>
                         <span className="fw-semibold text-decoration-line-through fs-6 text-secondary">
-                          {prod.originalPrice}
+                          {product.originalPrice}
                         </span>
                       </div>
-                      <div className="">{prod.discount}%</div>
+                      <div className="">{product.discount}%</div>
                       <div className="d-flex flex-column flex-sm-row flex-wrap align-items-center">
                         <span className="pe-2">Quantity: </span>
                         <div className="d-flex flex-nowrap">
                           <button
                             className="rounded-circle me-2"
                             onClick={() => {
-                              removeProductFromCart(prod);
+                              decrementQuantity(cartId, quantity);
                             }}
                           >
                             {" "}
@@ -59,7 +60,7 @@ export default function Cart() {
                           <button
                             className="rounded-circle mx-2"
                             onClick={() => {
-                              addToCartHandler(prod);
+                              incrementQuantity(cartId, quantity);
                             }}
                           >
                             {" "}
@@ -78,14 +79,13 @@ export default function Cart() {
                           Save to Wishlist
                         </button>
                       </div>
-                      {/* </div> */}
                     </div>
-                    {/* </div> */}
-                            <div className="container">{ index < cart.length -1 && <hr className="" />}</div>
-                    
-                  {/* </div> */}
-                </div>
-              ))}
+                    <div className="container">
+                      {index < cart.length - 1 && <hr className="" />}
+                    </div>
+                  </div>
+                )
+              )}
             </div>
             <div className="col-12 col-md-4">
               <div className="bg-light p-3">
