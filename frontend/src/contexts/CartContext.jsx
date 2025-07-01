@@ -7,7 +7,7 @@ const useCartContext = () => useContext(CartContext);
 export default useCartContext;
 
 export function CartProvider({ children }) {
-  const { data, loading, error } = useFetch("http://localhost:3000/cart");
+  const { data, loading, error } = useFetch("https://e-commerce-app-ten-pi.vercel.app/cart");
   const [cart, setCart] = useState(null);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export function CartProvider({ children }) {
   async function addToCartHandler(prod) {
     // check if prod is not added
     if (!cart.filter((item) => item.productId._id === prod._id).length) {
-      const response = await fetch("http://localhost:3000/cart", {
+      const response = await fetch("https://e-commerce-app-ten-pi.vercel.app/cart", {
         method: "POST",
         body: JSON.stringify({ productId: prod._id, quantity: 1 }),
         headers: {
@@ -43,7 +43,7 @@ export function CartProvider({ children }) {
   }
 
   async function incrementQuantity(cartId, quantity) {
-    const response = await fetch(`http://localhost:3000/cart/${cartId}`, {
+    const response = await fetch(`https://e-commerce-app-ten-pi.vercel.app/cart/${cartId}`, {
       method: "POST",
       body: JSON.stringify({ quantity: quantity + 1 }),
       headers: {
@@ -67,7 +67,7 @@ export function CartProvider({ children }) {
       await removeProductFromCart(cartId);
       return 0;
     } else {
-      const response = await fetch(`http://localhost:3000/cart/${cartId}`, {
+      const response = await fetch(`https://e-commerce-app-ten-pi.vercel.app/cart/${cartId}`, {
         method: "POST",
         body: JSON.stringify({ quantity: quantity - 1 }),
         headers: {
@@ -88,7 +88,7 @@ export function CartProvider({ children }) {
 
   async function removeProductFromCart(cartId) {
     if (cart.filter((item) => item._id == cartId).length) {
-      const response = await fetch(`http://localhost:3000/cart/${cartId}`, {
+      const response = await fetch(`https://e-commerce-app-ten-pi.vercel.app/cart/${cartId}`, {
         method: "DELETE",
       });
       if (response.ok) {

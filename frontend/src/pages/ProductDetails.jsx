@@ -67,12 +67,11 @@ export default function ProductDetails() {
                             right: "-1rem",
                             cursor: "pointer",
                           }}
-                          onClick={() => {
-                            wishlistHandler(productDetails);
-                            setIsInWishlist(!isInWishlist);
+                          onClick={ async () => {
+                            await wishlistHandler(productDetails)
                           }}
                         >
-                          {isInWishlist ? (
+                          {wishlist.filter((item) => item.itemId._id === productDetails._id).length ? (
                             <FavoriteIcon
                               sx={{ color: red[500] }}
                               className=""

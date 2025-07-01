@@ -1,8 +1,12 @@
+import { useNavigate } from "react-router";
 import Header from "../components/Header";
 import useCartContext from "../contexts/CartContext";
+import useWishlistContext from "../contexts/WishlistContext";
 
 export default function Cart() {
-  const { cart, incrementQuantity, decrementQuantity } = useCartContext();
+  const { cart, incrementQuantity, decrementQuantity, removeProductFromCart } = useCartContext();
+  const { wishlist, wishlistHandler } = useWishlistContext();
+  const naviagte = useNavigate()
 
   console.log(cart);
   return (
@@ -19,7 +23,9 @@ export default function Cart() {
                     className="row d-flex w-100 flex-column flex-sm-row align-items-center"
                     key={index}
                   >
-                    <div class="col-sm-4" style={{}}>
+                    <div class="col-sm-4" onClick={() => {
+                      naviagte(`/${product.category.toLowerCase()}/product/${product._id}`)
+                    }} style={{cursor: 'pointer'}}>
                       <img
                         src={product.thumbnailImageUrl}
                         class="img-fluid mx-auto d-block"
@@ -72,12 +78,33 @@ export default function Cart() {
                         <button
                           to="/home appliances"
                           className="btn btn-primary rounded-0 w-100 mb-2"
+                          onClick={async () => {
+                            await removeProductFromCart(cartId)
+                          }}
                         >
-                          Add To Cart
+                          Remove From Cart
                         </button>
-                        <button className="btn btn-secondary rounded-0 w-100">
-                          Save to Wishlist
-                        </button>
+                        {wishlist.filter(
+                          (item) => item.itemId._id === product._id
+                        ).length ? (
+                          <button
+                            className="btn btn-info rounded-0 w-100"
+                            onClick={async () => {
+                              await wishlistHandler(product);
+                            }}
+                          >
+                            Remove from Wishlist
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-secondary rounded-0 w-100"
+                            onClick={async () => {
+                              await wishlistHandler(product);
+                            }}
+                          >
+                            Save to Wishlist
+                          </button>
+                        )}
                       </div>
                     </div>
                     <div className="container">

@@ -33,7 +33,6 @@ export default function Products() {
     const productsByCategory = products.filter(
       (prod) => prod.category.toLowerCase() == category.toLowerCase()
     );
-    console.log(productsByCategory);
     let allSubCategory = productsByCategory.reduce(
       (acc, curr) => [...acc, ...curr.subCategory],
       []
@@ -42,6 +41,8 @@ export default function Products() {
   }, [products, category]);
 
   const { wishlist, wishlistHandler } = useWishlistContext();
+
+  console.log(wishlist);
 
   return (
     <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
@@ -267,16 +268,18 @@ export default function Products() {
                                   </button>
                                 )}
 
-                                {wishlist.includes(prod) ? (
+                                {wishlist.filter(
+                                  (item) => item.itemId._id === prod._id
+                                ).length ? (
                                   <button
                                     className="btn rounded-0 mt-2"
                                     style={{
                                       backgroundColor: "#898989",
                                       color: "white",
                                     }}
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                       e.preventDefault();
-                                      wishlistHandler(prod);
+                                      await wishlistHandler(prod);
                                     }}
                                   >
                                     Remove from Wishlist
@@ -284,9 +287,9 @@ export default function Products() {
                                 ) : (
                                   <button
                                     className="btn btn-outline-secondary border border-black rounded-0 mt-2"
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                       e.preventDefault();
-                                      wishlistHandler(prod);
+                                      await wishlistHandler(prod);
                                     }}
                                   >
                                     Save to Wishlist
